@@ -4,11 +4,6 @@ import random
 import os
 import traceback
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-
-
-
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,13 +11,7 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from .m_configs import GET_NEXT_BUTTON_SCRIPT,\
                     MERCARI_DEFAULT_URL,\
-                    GET_ITEM_NAME, GET_ITEM_PRICE, GET_ITEM_DESCRIPTION, GET_ITEM_SOLD
-                    
-from .input import Input
-
-input_class = Input()
-
-QUANTITY = input_class.get_QUANTITY()
+                    GET_ITEM_NAME, GET_ITEM_NAMEV2, GET_ITEM_PRICE, GET_ITEM_PRICEV2, GET_ITEM_DESCRIPTION, GET_ITEM_DESCRIPTIONV2, QUANTITY, GET_ITEM_SOLD
                     
 
 exec_file_name =  os.path.basename(__file__)[:-3]
@@ -38,14 +27,10 @@ def get_scrapper_driver():
     op.add_argument("--proxy-server='direct://'")
     op.add_argument("--proxy-bypass-list=*")
     op.add_argument("--start-maximized")
-    op.add_argument('headless')
     # op.add_argument("--headless")
     # op.add_argument('--user-agent=hogehoge')
     #Iniciar navegador habitual (las cookies se pueden utilizar tal cual)
-    #driver = webdriver.Chrome(options=op)
-    
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=op)
-
+    driver = webdriver.Chrome(options=op)
     return driver
 
 def custom_time_sleep():
@@ -57,8 +42,7 @@ class MercariDriver():
 
     def __init__(self, driver):
         self.driver = driver
-        
-        
+
     def move_page(self, url):
         self.driver.get(url)
         WebDriverWait(self.driver, 30).until(
@@ -92,7 +76,7 @@ class MercariDriver():
             joined_url_list.append(absolute_url)
         return joined_url_list  
 
-   
+
     def get_next_button(self):
         next_button = self.driver.execute_script(GET_NEXT_BUTTON_SCRIPT)
         return next_button
@@ -105,10 +89,14 @@ class MercariDriver():
             except:
                 sold_exist = None
 
-            name = self.driver.execute_script(GET_ITEM_NAME)
-            price = self.driver.execute_script(GET_ITEM_PRICE)
-            description = self.driver.execute_script(GET_ITEM_DESCRIPTION)
-
+            try:
+                name = self.driver.execute_script(GET_ITEM_NAME)
+                price = self.driver.execute_script(GET_ITEM_PRICE)
+                description = self.driver.execute_script(GET_ITEM_DESCRIPTION)
+            except:
+                name = self.driver.execute_script(GET_ITEM_NAMEV2)
+                price = self.driver.execute_script(GET_ITEM_PRICEV2)
+                description = self.driver.execute_script(GET_ITEM_DESCRIPTIONV2)
 
             #print("name: ", name)
             #print("price: ", price)
@@ -117,7 +105,7 @@ class MercariDriver():
             print(self.driver.current_url)
             print(traceback.print_exc())
             return (None, None, None)   
- 
+
         price = price.replace(",", "")
         price = int(price)
         #check if sold_exist is False

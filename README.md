@@ -2,15 +2,13 @@
 
 To use:
 
-Have Google Chrome installed on your device
+(Windows)
+-Download Selenium
+-Import chromedriver.exe from ./dist/webdrivers/chromedriver.exe into C:\\webdrivers
+-Add C:\\webdrivers\chromedriver.exe into Environment Variable
+-Download and install Selenium
 
-#install dependencies
-
-$pip install -r requirements.txt
-
-
-
-Execute on terminal (as administrator):
+Execute:
 
 $python3 main.py
 
@@ -20,7 +18,7 @@ $python3 main.py
 
 To create executable:
 
-
+$pip3 install PyInstaller
 $python -m PyInstaller --onefile --uac-admin main.py
 
 

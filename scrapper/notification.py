@@ -4,21 +4,13 @@ import csv
 import os
 import io
 from googletrans import Translator
-#from .input import PRODUCT_CATEGORY, trans_lang, INTEREST_RATE
-from .input import Input
+from .m_configs import PRODUCT_CATEGORY, trans_lang
+
 translator = Translator()
 
-input_class = Input()
 
-
-
-
-def notify(item_url, name, price, description, TRANS_LANG, INTEREST_RATE, PRODUCT_CATEGORY):
-    #transform interest rate from percentage to decimal
-    # f.e. INTEREST_RATE is 50, interest should be 1.5
-    interest = INTEREST_RATE / 100 + 1
-    
-    eur_price = str(round(((price * 0.0068) * interest), 2)) + " EUR" 
+def notify(item_url, name, price, description):
+    eur_price = str(round(((price * 0.0068) * 1.5), 2)) + " EUR" 
     
     #example url: https://jp.mercari.com/item/m35776031725
     
@@ -58,8 +50,8 @@ def notify(item_url, name, price, description, TRANS_LANG, INTEREST_RATE, PRODUC
     
     try:
         #translate from japanese to english
-        name = translator.translate(name, dest=TRANS_LANG).text
-        description = translator.translate(description, dest=TRANS_LANG).text
+        name = translator.translate(name, dest=trans_lang).text
+        description = translator.translate(description, dest=trans_lang).text
 
 
         #replace all double quotes with single quotes
@@ -158,12 +150,12 @@ def notify(item_url, name, price, description, TRANS_LANG, INTEREST_RATE, PRODUC
                     'taxable',
                     '1',
                     '0',
-                    '1',
+                    '0',
                     '1',
                     '',
                     name,
                     eur_price,
-                    '1',
+                    '',
                     item_url,
                     img_urls,
                     description,
@@ -187,7 +179,7 @@ def notify(item_url, name, price, description, TRANS_LANG, INTEREST_RATE, PRODUC
                     'taxable',
                     '1',
                     '0',
-                    '1',
+                    '0',
                     '1',
                     '',
                     name,
